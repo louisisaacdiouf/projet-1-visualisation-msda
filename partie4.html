@@ -1,0 +1,191 @@
+<!DOCTYPE html>
+<html>
+
+
+<head>
+<meta charset="utf-8">
+
+<style>
+
+    
+    .axis {
+        font-size: 13px;
+        
+        fill:none;
+        stroke:#000;
+        
+        }
+    .label {font-size:13px}
+
+</style>
+</head>
+
+<body>
+
+<script src="d3.js"></script>
+
+
+<script>
+//Parametrage des dimensions 
+
+
+
+var margin = {top:200, right:60, bottom:60, left:60},
+width = 600, height = 600;
+
+//Mise en place du cadre de dessin
+var svg = d3.select("body").append("svg")
+.attr("height",height + margin.left + margin.right)
+.attr("width",width + margin.top+ margin.bottom)
+.append("g")
+.attr("transform","translate(" + margin.top + "."  + margin.left+ ")");
+
+var election = 
+[{"candidat":"Macky Sall", "part":58.26},
+{"candidat": "Idrissa Seck", "part":20.51},
+{"candidat": "Ousmane Sonko", "part":15.67},
+{"candidat": "Issa Sall", "part":4.07},
+{"candidat": "Madické Niang", "part":1.48}];
+var colors=["brown","orange","red","green","blue"]
+var color=["Macky Sall","Idrissa Seck","Ousmane Sonko","Issa Sall","Madické Niang"]
+
+election = election.sort(function (a, b) {
+            return d3.descending(a.part, b.part);
+        })
+
+        var y = d3.scale.ordinal()
+.rangeRoundBands([height,0],0.6);
+
+var x = d3.scale.linear()
+.range([0,width],);
+
+var xAxis = d3.svg.axis()
+.scale (y)
+.orient ("left")
+.ticks(10);
+
+var yAxis = d3.svg.axis()
+.scale(x)
+.orient("bottom")
+.ticks(8);
+
+election.forEach(function(d){
+    d.candidat = d.candidat;
+    d.part = +d.part;
+});
+
+y.domain(election.map(function(d){return d.candidat;}));
+x.domain([0,d3.max(election, function(d){return d.part;})]);
+
+svg.append("g")
+.attr("class","y axis")
+.attr("transform","translate(0,"+height+")")
+.call(yAxis);
+
+svg.append("g")
+.attr("class","x axis")
+.call(xAxis);
+
+        var bars = svg.selectAll(".bar")
+            .data(election)
+            .enter()
+            .append("g")
+
+            bars.append("rect")
+            .attr("class", "bar")
+            .attr("fill",function(d,i){
+                return colors[i];
+            })
+            .attr("y", function (d) {
+                return y(d.candidat);
+            })
+            .attr("height", y.rangeBand())
+            .attr("x", 0)
+            .attr("width", function (d) {
+                return x(d.part);
+            });
+
+//Mise en place des axes
+var xAxis = d3.svg.axis()
+.scale (y)
+.orient ("left")
+.ticks(10);
+
+
+election.forEach(function(d){
+    d.candidat = d.candidat;
+    d.part = +d.part;
+});
+
+y.domain(election.map(function(d){return d.candidat;}));
+x.domain([0,d3.max(election, function(d){return d.part;})]);
+
+svg.append("g")
+.attr("class","y axis")
+.attr("transform","translate(0,"+height+")")
+.call(yAxis);
+
+svg.append("g")
+.attr("class","x axis")
+.call(xAxis);
+
+
+
+
+
+bars.append("text")
+            .attr("class", "label")
+            //y position of the label is halfway down the bar
+            .attr("y", function (d) {
+                return y(d.candidat) + y.rangeBand() / 2 + 4;
+            })
+            //x position is 3 pixels to the right of the bar
+            .attr("x", function (d) {
+                return x(d.part) + 3;
+            })
+            .attr("fill",function(d,i){
+                return colors[i];
+            })
+            .text(function (d) {
+                return d.part;})
+            //legende
+            
+            var legends = svg.append("g").attr("transform", "translate(550,200)")
+.selectAll(".legends").data(election);
+
+var legend = legends.enter().append("g").classed("label", true).attr
+("transform", function(d,i){return "translate(0," + (i+1)*30 + ")";});
+
+legend.append("rect").attr("width", 15).attr("height", 15).attr("fill", function(d,i){
+			return(colors[i]);});
+
+legend.append("text").classed("label", true).text(function(d,i){return color[i];})
+ .attr("fill", function(d,i){
+			return(color[i]);})
+ .attr("x",20)
+ .attr("y",15);
+
+
+
+ svg.append("text")
+ .attr("x", -300)
+ .attr("y", -150)
+ .attr("text-anchor","middle")
+ .text("Candidat")
+ .style("stroke","black")
+ .style("transform","rotate(-90deg)");
+ svg.append("text")
+ .attr("x", 300)
+ .attr("y", 650)
+ .attr("text-anchor","middle")
+ .text("Resultat obtenu en %")
+ .style("stroke","black");	
+
+
+           
+       
+</script>
+
+</body>
+</html>
+
